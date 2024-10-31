@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gray-100 text-gray-800 relative">
+    <main className="flex min-h-screen flex-col items-center justify-center p-24 dark:bg-slate-900 bg-gray-100 dark:text-white text-gray-800 relative">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -22,12 +22,12 @@ export default function Home() {
         <div className="space-x-4">
           <Link href="/register">
             <Button size="lg" variant="default">
-              Get Started
+              Create some memories
             </Button>
           </Link>
-          <Link href="/about">
+          <Link href="/login">
             <Button size="lg" variant="outline">
-              Learn More
+              Sign In
             </Button>
           </Link>
         </div>
