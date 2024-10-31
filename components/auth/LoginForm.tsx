@@ -1,4 +1,5 @@
-'use client';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+"use client";
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -20,11 +21,11 @@ const loginSchema = z.object({
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
+type AuthMethod = 'password' | 'magic-link' | 'email-otp';
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isMagicLink, setIsMagicLink] = useState(false);
-  const [isEmailOTP, setIsEmailOTP] = useState(false);
+  const [authMethod, setAuthMethod] = useState<AuthMethod>('password');
   const router = useRouter();
 
   const form = useForm<LoginFormData>({
@@ -38,7 +39,7 @@ export function LoginForm() {
   const checkActiveSession = async () => {
     try {
       const session = await account.getSession('current');
-      return session; // Return session if it exists
+      return session;
     } catch (error) {
       return null;
     }
@@ -46,44 +47,37 @@ export function LoginForm() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      console.log("Form submitted with data:", data); // Log submitted data
       setIsLoading(true);
       
-      // Check if a session is already active
       const session = await checkActiveSession();
-      console.log("Active session:", session); // Log session status
   
       if (session) {
-        // If a session is active, redirect to the dashboard
-        console.log("Redirecting to dashboard due to active session");
         router.push('/dashboard');
         return;
       }
   
       let user;
-      let redirectUrl = "https://memoryfort.com/dashboard";
-      if (isMagicLink) {
-        console.log("Sending magic link to:", data.email);
-        await sendMagicLink(data.email, redirectUrl);
-      } else if (isEmailOTP) {
-        console.log("Sending email OTP to:", data.email);
-        await sendEmailOTP(data.email);
-      } else {
-        console.log("Signing in with email and password");
-        user = await signInAccount(data.email, data.password);
-      }
-  
-      // Redirect based on user role
-      if (user) {
-        console.log("User logged in:", user);
-        if (user.role === 'admin') {
-          router.push('/admin-dashboard');
-        } else {
-          router.push('/dashboard');
-        }
+      const redirectUrl = "https://memoryfort.com/dashboard";
+      
+      switch (authMethod) {
+        case 'magic-link':
+          console.log("Sending magic link to:", data.email);
+          await sendMagicLink(data.email, redirectUrl);
+          break;
+        case 'email-otp':
+          console.log("Sending email OTP to:", data.email);
+          await sendEmailOTP(data.email);
+          break;
+        default:
+          console.log("Signing in with email and password");
+          user = await signInAccount(data.email, data.password);
+          if (user) {
+            console.log("User logged in:", user);
+            router.push(user.role === 'admin' ? '/admin-dashboard' : '/dashboard');
+          }
       }
     } catch (error) {
-      console.error("Login error:", error); // Log any errors
+      console.error("Login error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -112,7 +106,7 @@ export function LoginForm() {
                   </FormItem>
                 )}
               />
-              {!isMagicLink && !isEmailOTP && (
+              {authMethod === 'password' && (
                 <FormField
                   control={form.control}
                   name="password"
@@ -120,24 +114,42 @@ export function LoginForm() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <Input type="password" placeholder="Enter Password" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               )}
-              <div className="flex justify-between">
-                <Button type="button" onClick={() => setIsMagicLink(!isMagicLink)}>
-                  {isMagicLink ? 'Use Password' : 'Use Magic Link'}
+              <div className="flex gap-4 justify-evenly">
+                <Button
+                  type="button"
+                  className="w-full"
+                  variant={authMethod === 'password' ? 'default' : 'outline'}
+                  onClick={() => setAuthMethod('password')}
+                >
+                  Password Login
                 </Button>
-                <Button type="button" onClick={() => setIsEmailOTP(!isEmailOTP)}>
-                  {isEmailOTP ? 'Use Password' : 'Use Email OTP'}
+                <Button
+                  type="button"
+                  className="w-full"
+                  variant={authMethod === 'magic-link' ? 'default' : 'outline'}
+                  onClick={() => setAuthMethod('magic-link')}
+                >
+                  Magic Link
+                </Button>
+                <Button
+                  type="button"
+                  className="w-full"
+                  variant={authMethod === 'email-otp' ? 'default' : 'outline'}
+                  onClick={() => setAuthMethod('email-otp')}
+                >
+                  Email OTP
                 </Button>
               </div>
               <Button className="w-full" type="submit" disabled={isLoading}>
                 {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-                {isMagicLink || isEmailOTP ? 'Send Link/OTP' : 'Sign In'}
+                {authMethod === 'password' ? 'Sign In' : 'Send Link/OTP'}
               </Button>
             </form>
           </Form>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { account } from '@/lib/appwrite';
-import { User } from '@/types'; // Import your User type
+import { User } from '@/types';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -14,14 +14,15 @@ export function useAuth() {
 
         // Map Appwrite user details to your User type
         const customUser: User = {
+          id: session.$id, 
           userId: session.$id,
           email: userDetails.email,
           name: userDetails.name || '',
           image: userDetails.prefs?.avatar || '',
           is2FAEnabled: false,
           role: 'user',
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: new Date(), 
+          updatedAt: new Date(), 
         };
 
         setUser(customUser);

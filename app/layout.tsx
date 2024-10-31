@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { Toaster } from '@/components/ui/toaster';
 import { QueryProvider } from '@/providers/QueryProvider';
+import { Footer } from "@/components/Footer";
 
 const quicksand = Quicksand({
   subsets: ['latin'],
@@ -67,10 +68,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>
-              <main className="font-sans min-h-screen bg-background">
-                {children}
-              </main>
-              <Toaster />
+            <main className="font-sans min-h-screen bg-background">
+              {children}
+            </main>
+            <Footer />
+            <Toaster />
           </QueryProvider>
         </ThemeProvider>
       </body>

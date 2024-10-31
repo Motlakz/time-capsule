@@ -1,4 +1,5 @@
 export type User = {
+    id: string;
     userId: string;
     email: string;
     name: string;
@@ -12,6 +13,7 @@ export type User = {
 export type TimeCapsule = {
     id: string;
     userId: string;
+    originalMockId: string;
     title: string;
     description: string;
     isPrivate: boolean;
@@ -23,6 +25,7 @@ export type TimeCapsule = {
     status: 'draft' | 'scheduled' | 'revealed' | 'destroyed';
     createdAt: Date;
     updatedAt: Date;
+    referenceId: string;
 };
 
 export type FileAttachment = {
@@ -33,17 +36,8 @@ export type FileAttachment = {
     size: number;
 };
 
-export type NotificationType = 
-    | 'capsule_reveal'
-    | 'capsule_invite'
-    | 'comment'
-    | 'mention'
-    | 'capsule_edit'
-    | 'self_destruct_warning'
-    | 'security_alert';
-
+export type NotificationType = 'capsule_reveal'| 'capsule_invite'| 'comment'| 'mention'| 'capsule_edit'| 'self_destruct_warning'| 'security_alert';
 export type NotificationStatus = 'unread' | 'read' | 'archived';
-
 export type Notification = {
     id: string;
     userId: string;
@@ -61,7 +55,6 @@ export type Comment = {
     id: string;
     capsuleId: string;
     userId: string;
-    // userName: string,
     content: string;
     parentId?: string;
     createdAt: Date;

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -7,15 +7,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { FileUploader } from './FileUploader';
 import { updateCapsule, getCapsule } from '@/lib/appwrite';
-import type { FileAttachment, TimeCapsule } from '@/types';
+import type { TimeCapsule } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   Form,
@@ -113,6 +110,8 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
                     status: fetchedCapsule.status,
                     createdAt: new Date(fetchedCapsule.createdAt),
                     updatedAt: new Date(fetchedCapsule.updatedAt),
+                    referenceId: fetchedCapsule.referenceId,
+                    originalMockId: fetchedCapsule.originalMockId
                 };
           
                 setCapsule(mappedCapsule);
@@ -152,6 +151,8 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
                 id: capsuleId,
                 createdAt: capsule?.createdAt || new Date(),
                 updatedAt: new Date(),
+                originalMockId: capsule?.originalMockId || '',
+                referenceId: capsule?.referenceId || ''
             };
       
             await updateCapsule(updateData);

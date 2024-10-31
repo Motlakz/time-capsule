@@ -30,7 +30,7 @@ import {
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the time capsule
-              <span className="font-semibold"> "{capsuleTitle}"</span> and remove all associated data.
+              <span className="font-semibold"><strong>{capsuleTitle}</strong></span> and remove all associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -1,4 +1,5 @@
-'use client';
+/* eslint-disable @next/next/no-img-element */
+"use client";
 
 import { motion } from 'framer-motion';
 import { addHours, format, formatDistanceToNow, isAfter, isBefore } from 'date-fns';
@@ -21,7 +22,6 @@ import { toast } from "@/hooks/use-toast";
 import { DeleteCapsuleDialog } from '../DeleteModal';
 import { ShareCapsuleDialog } from '../ShareModal';
 import { cn } from "@/lib/utils";
-import Image from 'next/image';
 
 interface CapsuleCardProps {
   user: User;
@@ -47,8 +47,7 @@ const cardVariants = {
 export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'grid' }: CapsuleCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showShareDialog, setShowShareDialog] = useState(false);
-  
+  const [showShareDialog, setShowShareDialog] = useState(false);  
   const isRevealed = capsule.status === 'revealed';
   const isDestroyed = capsule.status === 'destroyed';
   const canComment = !capsule.isPrivate || 
@@ -93,7 +92,7 @@ export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'gri
       whileHover="hover"
       className={`relative flex flex-col ${layoutType === 'list' ? 'border-b' : ''}`} 
     >
-      <Card className={`flex flex-col ${isDestroyed ? 'opacity-50' : ''}`}>
+      <Card className={`flex flex-col border border-gray-700 rounded-lg ${isDestroyed ? 'opacity-50' : ''}`}>
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
@@ -129,16 +128,16 @@ export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'gri
                     {JSON.parse(capsule.files).length} attachment{JSON.parse(capsule.files).length !== 1 ? 's' : ''}
                   </span>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {JSON.parse(capsule.files).map((file: FileAttachment) => (
                     <button
                       key={file.id}
                       onClick={() => handleFileClick(file)}
-                      className="relative aspect-square rounded-md overflow-hidden group hover:ring-2 hover:ring-primary transition-all"
+                      className="relative border border-gray-700 aspect-square rounded-md overflow-hidden group hover:ring-2 hover:ring-primary transition-all"
                     >
                       {file.type.startsWith('image/') ? (
                         <>
-                          <Image
+                          <img
                             src={file.url}
                             alt={file.name}
                             className="object-cover w-full h-full"
@@ -174,32 +173,32 @@ export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'gri
 
             <div className="flex flex-wrap gap-2">
               {capsule.tags.map((tag, index) => (
-                <Badge key={index} variant="outline">
+                <Badge key={index} className="border border-gray-700 rounded-lg" variant="outline">
                   {tag}
                 </Badge>
               ))}
             </div>
           </div>
         </CardContent>
-        <CardFooter className="justify-between flex-col">
-          <div className="flex justify-between w-full">
-            {(layoutType === 'list' && canComment) && (
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setShowComments(!showComments)}
-                  className={cn(
-                    "gap-2",
-                    showComments && "bg-muted"
-                  )}
-                >
-                  <Icons.messageSquare className="h-4 w-4" />
-                  {showComments ? "Hide Comments" : "Show Comments"}
-                </Button>
-              </div>
+        <CardFooter className="flex flex-col md:flex-row justify-between items-start md:items-center">
+          <div className="flex flex-wrap gap-2">
+            {canComment && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setShowComments(!showComments)}
+                className={cn(
+                  "gap-2 mr-2 w-full border border-gray-700 rounded-lg",
+                  showComments && "bg-muted"
+                )}
+              >
+                <Icons.messageSquare className="h-4 w-4" />
+                {showComments ? "Hide Comments" : "Show Comments"}
+              </Button>
             )}
+          </div>
 
+          <div className="flex flex-col w-full md:flex-row-reverse gap-2 mt-2 md:mt-0">
             <DeleteCapsuleDialog
               isOpen={showDeleteDialog}
               onClose={() => setShowDeleteDialog(false)}
@@ -216,56 +215,56 @@ export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'gri
               capsule={capsule}
             />
 
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowShareDialog(true)}
-                disabled={isDestroyed}
-              >
-                <Icons.share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={onEdit} 
-                disabled={isDestroyed || isLocked(capsule)}
-              >
-                <Icons.edit className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
-              <Button 
-                variant="destructive" 
-                size="sm" 
-                onClick={() => setShowDeleteDialog(true)} 
-                disabled={isDestroyed || isLocked(capsule)}
-              >
-                <Icons.trash className="h-4 w-4 mr-2" />
-                Delete
-              </Button>
-            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="border border-gray-700 rounded-lg"
+              onClick={() => setShowShareDialog(true)}
+              disabled={isDestroyed}
+            >
+              <Icons.share2 className="h-4 w-4 mr-2" />
+              Share
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onEdit} 
+              className="border border-gray-700 rounded-lg"
+              disabled={isDestroyed || isLocked(capsule) || isRevealed}
+            >
+              <Icons.edit className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              className="border border-gray-700 rounded-lg"
+              onClick={() => setShowDeleteDialog(true)} 
+              disabled={isDestroyed || isLocked(capsule)}
+            >
+              <Icons.trash className="h-4 w-4 mr-2" />
+              Delete
+            </Button>
           </div>
-          
-          {showComments && layoutType === 'list' && canComment && ( 
-            <div className="mt-4 w-full border rounded-lg p-4 bg-muted/50">
-                <Comments 
-                capsuleId={capsule.id}
-                user={{
-                    id: user.userId,
-                    name: user.name
-                }}
-                isPublic={!capsule.isPrivate}
-                />
-            </div>
-          )}
         </CardFooter>
       </Card>
+
+      {/* Comments Section */}
+      {showComments && canComment && ( 
+        <div className="mt-4 w-full border rounded-lg p-4 bg-muted/50">
+          <Comments
+            capsuleId={capsule.id}
+            user={user}
+            capsuleOwnerId={capsule.userId}
+          />
+        </div>
+      )}
 
       {/* Lock overlay */}
       {isLocked(capsule) && (
         <div 
-          className="absolute inset-0 bg-background/80 backdrop-blur-sm rounded-lg
+          className="absolute inset-0 bg-background/80 backdrop-blur-sm border border-gray-700 rounded-lg
             flex flex-col items-center justify-center gap-4 cursor-not-allowed"
           onClick={handleLockedClick}
         >

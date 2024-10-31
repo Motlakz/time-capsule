@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { CapsuleEditor } from '@/components/capsules/CapsuleEditor'
 import { useParams, useRouter } from 'next/navigation'

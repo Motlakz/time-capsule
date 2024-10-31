@@ -32,10 +32,12 @@ export default function CapsulePage({ params }: { params: { id: string } }) {
           selfDestructDate: fetchedCapsule.selfDestructDate ? new Date(fetchedCapsule.selfDestructDate) : undefined,
           tags: fetchedCapsule.tags,
           collaborators: fetchedCapsule.collaborators || [],
-          files: fetchedCapsule.files || '[]', // Now expecting a string
+          files: fetchedCapsule.files || '[]',
           status: fetchedCapsule.status,
           createdAt: new Date(fetchedCapsule.createdAt),
           updatedAt: new Date(fetchedCapsule.updatedAt),
+          originalMockId: fetchedCapsule.originalMockId,
+          referenceId: fetchedCapsule.referenceId
         };
 
         setCapsule(mappedCapsule);

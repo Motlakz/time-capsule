@@ -9,6 +9,8 @@ import { MessageCircle, Trash, CornerDownRight } from "lucide-react";
 import { Comment } from "@/types";
 import { createComment, databases, appwriteConfig } from "@/lib/appwrite";
 import { Query, Models } from "appwrite";
+import { useNotifications } from "@/context/NotificationContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface CommentDocument extends Models.Document {
   capsuleId: string;
@@ -29,7 +31,7 @@ function convertDocToComment(doc: CommentDocument): Comment {
 }
 
 interface User {
-  id: string;
+  userId: string;
   name: string;
   image?: string;
 }
@@ -38,40 +40,91 @@ interface CommentsProps {
   capsuleId: string;
   user: User;
   isPublic?: boolean;
+  capsuleOwnerId: string;
 }
 
-function CommentComposer({ 
-  user, 
-  capsuleId,
-  parentId,
-  onCommentAdded,
-  isReply = false
-}: { 
+interface CommentComposerProps {
   user: User;
   capsuleId: string;
   parentId?: string;
   onCommentAdded: () => void;
   isReply?: boolean;
-}) {
+  capsuleOwnerId: string;
+  parentCommentUserId?: string;
+}
+
+interface CommentItemProps {
+  comment: Comment;
+  user: User;
+  capsuleId: string;
+  onCommentAdded: () => void;
+  onDelete: (commentId: string) => void;
+  depth?: number;
+  capsuleOwnerId: string;
+  parentCommentUserId?: string;
+}
+
+function CommentComposer({
+  user,
+  capsuleId,
+  parentId,
+  onCommentAdded,
+  isReply = false,
+  capsuleOwnerId,
+  parentCommentUserId
+}: CommentComposerProps) {
+  const { createNotification } = useNotifications();
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const handleSubmit = async () => {
-    if (!content.trim()) return;
-    
+    if (!content.trim() || isSubmitting) return;
+
     setIsSubmitting(true);
     try {
       await createComment({
         capsuleId,
-        userId: user.id,
+        userId: user.userId,
         content: content.trim(),
         parentId
       });
-      
+
+      // Create notification for new comment or reply
+      if (!parentId) {
+        if (user.userId !== capsuleOwnerId) {
+          await createNotification(
+            'comment',
+            'New Comment',
+            `${user.name} commented on your time capsule`,
+            capsuleId,
+            'capsule'
+          );
+        }
+      } else if (parentCommentUserId && parentCommentUserId !== user.userId) {
+        await createNotification(
+          'comment',
+          'New Reply',
+          `${user.name} replied to your comment`,
+          capsuleId,
+          'comment'
+        );
+      }
+
       setContent("");
       onCommentAdded();
+      
+      toast({
+        title: isReply ? "Reply added" : "Comment added",
+        description: "Your message has been posted successfully.",
+      });
     } catch (error) {
       console.error("Error creating comment:", error);
+      toast({
+        title: "Error",
+        description: "Failed to post your message. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -90,6 +143,7 @@ function CommentComposer({
           onChange={(e) => setContent(e.target.value)}
           placeholder={isReply ? "Write a reply..." : "Write a comment..."}
           className={cn("min-h-[100px]", isReply ? "text-sm" : "")}
+          disabled={isSubmitting}
         />
       </div>
       <div className="flex justify-end">
@@ -111,28 +165,22 @@ function CommentItem({
   capsuleId,
   onCommentAdded,
   onDelete,
-  depth = 0
-}: { 
-  comment: Comment;
-  user: User;
-  capsuleId: string;
-  onCommentAdded: () => void;
-  onDelete: (commentId: string) => void;
-  depth?: number;
-}) {
+  depth = 0,
+  capsuleOwnerId,
+}: CommentItemProps) {
   const [isReplying, setIsReplying] = useState(false);
   const [replies, setReplies] = useState<Comment[]>([]);
   const [showReplies, setShowReplies] = useState(false);
   const [isLoadingReplies, setIsLoadingReplies] = useState(false);
 
-  const isOwnComment = user.id === comment.userId;
+  const isOwnComment = user.userId === comment.userId;
   const canReply = depth < 3; // Limit reply depth to 3 levels
 
   useEffect(() => {
     if (showReplies) {
       loadReplies();
     }
-  }, [showReplies]);
+  }, [showReplies, comment.id]);
 
   const loadReplies = async () => {
     if (isLoadingReplies) return;
@@ -243,6 +291,8 @@ function CommentItem({
                 }
               }}
               isReply={true}
+              capsuleOwnerId={capsuleOwnerId}
+              parentCommentUserId={comment.userId}
             />
           </div>
         )}
@@ -263,6 +313,8 @@ function CommentItem({
                   onCommentAdded={onCommentAdded}
                   onDelete={onDelete}
                   depth={depth + 1}
+                  capsuleOwnerId={capsuleOwnerId}
+                  parentCommentUserId={reply.userId}
                 />
               ))
             ) : (
@@ -275,11 +327,14 @@ function CommentItem({
   );
 }
 
-export function Comments({ capsuleId, user, isPublic = false }: CommentsProps) {
+export function Comments({ capsuleId, user, capsuleOwnerId }: CommentsProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const loadComments = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
       const response = await databases.listDocuments(
         appwriteConfig.databaseId,
@@ -297,6 +352,7 @@ export function Comments({ capsuleId, user, isPublic = false }: CommentsProps) {
       setComments(commentsList);
     } catch (error) {
       console.error("Error loading comments:", error);
+      setError("Failed to load comments. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -313,9 +369,10 @@ export function Comments({ capsuleId, user, isPublic = false }: CommentsProps) {
         appwriteConfig.collections.comments,
         commentId
       );
-      await loadComments();
+      setComments((prevComments) => prevComments.filter(comment => comment.id !== commentId));
     } catch (error) {
       console.error("Error deleting comment:", error);
+      setError("Failed to delete comment. Please try again.");
     }
   };
 
@@ -333,8 +390,11 @@ export function Comments({ capsuleId, user, isPublic = false }: CommentsProps) {
         user={user} 
         capsuleId={capsuleId}
         onCommentAdded={loadComments}
+        capsuleOwnerId={capsuleOwnerId}
       />
       
+      {error && <div className="p-4 text-red-500">{error}</div>}
+
       <div className="divide-y">
         {comments.length > 0 ? (
           comments.map((comment) => (
@@ -345,6 +405,8 @@ export function Comments({ capsuleId, user, isPublic = false }: CommentsProps) {
               capsuleId={capsuleId}
               onCommentAdded={loadComments}
               onDelete={handleDeleteComment}
+              capsuleOwnerId={capsuleOwnerId}
+              parentCommentUserId={comment.userId}
             />
           ))
         ) : (

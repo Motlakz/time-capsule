@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from 'react';
 import Dashboard from '@/components/Dashboard';
@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { getCurrentUser, getUserCapsules, createCapsule, updateCapsule, deleteCapsule } from '@/lib/appwrite';
 import { ID } from 'appwrite';
 import MainLoader from '@/components/MainLoader';
+import { seedDatabase } from '@/utils/seedDatabase';
 
 export default function DashboardPage() {
     const [user, setUser] = useState<User | null>(null);
@@ -15,6 +16,24 @@ export default function DashboardPage() {
     const { toast } = useToast();
 
     useEffect(() => {
+        const initializeDatabase = async () => {
+            try {
+                const wasSeeded = await seedDatabase();
+                if (wasSeeded) {
+                    console.log('Database seeded successfully');
+                } else {
+                    console.log('Database was already seeded, skipping...');
+                }
+            } catch (error) {
+                console.error('Failed to seed database:', error);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "Failed to seed database.",
+                });
+            }
+        };
+
         const loadData = async () => {
             try {
                 // Fetch user data
@@ -29,6 +48,7 @@ export default function DashboardPage() {
                 const fetchedCapsules: TimeCapsule[] = response.documents.map(doc => ({
                     id: doc.$id,
                     userId: doc.userId,
+                    originalMockId: doc.$id,
                     title: doc.title,
                     description: doc.description,
                     isPrivate: doc.isPrivate,
@@ -39,6 +59,7 @@ export default function DashboardPage() {
                     status: doc.status,
                     createdAt: new Date(doc.createdAt),
                     updatedAt: new Date(doc.updatedAt),
+                    referenceId: doc.referenceId
                 }));
                 setCapsules(fetchedCapsules);
             } catch (error) {
@@ -53,7 +74,8 @@ export default function DashboardPage() {
             }
         };
 
-        loadData();
+        // Initialize the database and then load data
+        initializeDatabase().then(loadData);
     }, [toast]);
 
     const handleCreateCapsule = async (capsule: Omit<TimeCapsule, 'id' | 'createdAt' | 'updatedAt'>) => {

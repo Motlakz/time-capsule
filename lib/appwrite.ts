@@ -1,8 +1,8 @@
 import { Account, Client, Databases, Storage, ID, Query } from 'appwrite';
-import { User, TimeCapsule, Comment, Notification, NotificationType } from '@/types';
+import { TimeCapsule, Comment, Notification, NotificationType } from '@/types';
 
 // Client Config
-const client = new Client()
+export const client = new Client()
     .setEndpoint('https://cloud.appwrite.io/v1')
     .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!);
 
@@ -130,6 +130,15 @@ export async function signOutAccount() {
     }
 }
 
+export async function deleteAccount(userId: string): Promise<void> {
+    try {
+        await account.deleteIdentity(userId);
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        throw error;
+    }
+}
+
 // Capsule Functions
 export async function createCapsule(capsule: Omit<TimeCapsule, 'id' | 'createdAt' | 'updatedAt'>) {
     try {
@@ -214,23 +223,30 @@ export async function deleteCapsule(capsuleId: string) {
     }
 }
 
-// Comment Functions
 export async function createComment(comment: Omit<Comment, 'id' | 'createdAt'>) {
     try {
-        const newComment: Comment = {
-            ...comment,
-            id: ID.unique(),
-            createdAt: new Date()
+        const documentId = ID.unique();
+        const timestamp = new Date().toISOString();
+        
+        const commentData = {
+            id: documentId,
+            capsuleId: comment.capsuleId,
+            userId: comment.userId,
+            content: comment.content,
+            parentId: comment.parentId || null,
+            createdAt: timestamp
         };
 
-        return await databases.createDocument(
+        const response = await databases.createDocument(
             appwriteConfig.databaseId,
             appwriteConfig.collections.comments,
-            newComment.id,
-            newComment
+            documentId,
+            commentData
         );
+
+        return response;
     } catch (error) {
-        console.error(error);
+        console.error("Error creating comment:", error);
         throw error;
     }
 }
@@ -286,18 +302,23 @@ export async function getUserNotifications(userId: string) {
 
 export async function markNotificationAsRead(notificationId: string) {
     try {
-        return await databases.updateDocument(
-            appwriteConfig.databaseId,
-            appwriteConfig.collections.notifications,
-            notificationId,
-            {
-                status: 'read',
-                readAt: new Date()
-            }
-        );
+      if (!notificationId) {
+        throw new Error('Notification ID is required');
+      }
+  
+      const response = await databases.updateDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.collections.notifications,
+        notificationId,
+        {
+          status: 'read',
+          readAt: new Date().toISOString()
+        }
+      );
+      return response;
     } catch (error) {
-        console.error(error);
-        throw error;
+      console.error('Error marking notification as read:', error);
+      throw error;
     }
 }
 

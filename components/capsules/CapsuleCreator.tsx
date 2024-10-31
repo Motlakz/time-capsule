@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -11,9 +11,6 @@ import { createCapsule } from '@/lib/appwrite';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   Form,
@@ -48,6 +45,7 @@ import { Badge } from '../ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { ID } from 'appwrite';
 
 const capsuleSchema = z.object({
     title: z.string().min(3, 'Title must be at least 3 characters'),
@@ -98,52 +96,53 @@ export function CapsuleCreator() {
     });
     
     const onSubmit = async (data: CapsuleFormData) => {
-        if (!user) {
-            toast({
-                variant: "destructive",
-                title: "Authentication Error",
-                description: "You must be logged in to create a capsule.",
-            });
-            return;
-        }
-    
-        try {
-            setIsSubmitting(true);
-            
-            // Create the capsule data without modifying the files
-            const capsuleData = {
-                ...data,
-                userId: user.userId,
-                files, // Use files directly without additional JSON.stringify
-                collaborators: [],
-                status: 'scheduled' as const,
-                description: data.description || '',
-            };
-    
-            const newCapsule = await createCapsule(capsuleData);
-    
-            toast({
-                title: "Success!",
-                description: "Your time capsule has been created.",
-            });
-    
-            form.reset();
-            setFiles('[]');
-            router.push(`/dashboard/capsules/${newCapsule.$id}`);
-            
-        } catch (error) {
-            console.error('Failed to create capsule:', error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: error instanceof Error 
-                    ? error.message 
-                    : "Failed to create time capsule. Please try again.",
-            });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+      if (!user) {
+          toast({
+              variant: "destructive",
+              title: "Authentication Error",
+              description: "You must be logged in to create a capsule.",
+          });
+          return;
+      }
+  
+      try {
+          setIsSubmitting(true);
+          
+          const capsuleData = {
+              ...data,
+              userId: user.userId,
+              files,
+              collaborators: [],
+              status: 'scheduled' as const,
+              referenceId: ID.unique(),
+              originalMockId: ID.unique(),
+              description: data.description || '',
+          };
+  
+          const newCapsule = await createCapsule(capsuleData);
+  
+          toast({
+              title: "Success!",
+              description: "Your time capsule has been created.",
+          });
+  
+          form.reset();
+          setFiles('[]');
+          router.push(`/dashboard/capsules/${newCapsule.$id}`);
+          
+      } catch (error) {
+          console.error('Failed to create capsule:', error);
+          toast({
+              variant: "destructive",
+              title: "Error",
+              description: error instanceof Error 
+                  ? error.message 
+                  : "Failed to create time capsule. Please try again.",
+          });
+      } finally {
+          setIsSubmitting(false);
+      }
+  };
     
       // Add loading state for user
       if (!user) {
