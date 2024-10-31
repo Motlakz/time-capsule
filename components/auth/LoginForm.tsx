@@ -84,7 +84,7 @@ export function LoginForm() {
   };
 
   return (
-    <motion.div className="w-full max-w-md mx-auto mt-24">
+    <motion.div className="w-full max-w-md mx-auto mt-24 border dark:border-gray-700 rounded-lg">
       <Card>
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
@@ -100,7 +100,7 @@ export function LoginForm() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="name@example.com" {...field} />
+                      <Input placeholder="name@example.com" className="border dark:border-gray-700" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -114,7 +114,7 @@ export function LoginForm() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Enter Password" {...field} />
+                        <Input type="password" className="border dark:border-gray-700" placeholder="Enter Password" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -124,7 +124,7 @@ export function LoginForm() {
               <div className="flex gap-4 justify-evenly">
                 <Button
                   type="button"
-                  className="w-full"
+                  className="w-full border dark:border-gray-700"
                   variant={authMethod === 'password' ? 'default' : 'outline'}
                   onClick={() => setAuthMethod('password')}
                 >
@@ -132,7 +132,7 @@ export function LoginForm() {
                 </Button>
                 <Button
                   type="button"
-                  className="w-full"
+                  className="w-full border dark:border-gray-700"
                   variant={authMethod === 'magic-link' ? 'default' : 'outline'}
                   onClick={() => setAuthMethod('magic-link')}
                 >
@@ -140,7 +140,7 @@ export function LoginForm() {
                 </Button>
                 <Button
                   type="button"
-                  className="w-full"
+                  className="w-full border dark:border-gray-700"
                   variant={authMethod === 'email-otp' ? 'default' : 'outline'}
                   onClick={() => setAuthMethod('email-otp')}
                 >

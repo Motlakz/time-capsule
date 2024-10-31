@@ -1,4 +1,4 @@
-import { Account, Client, Databases, Storage, ID, Query } from 'appwrite';
+import { Account, Client, Databases, Storage, ID, Query, Permission, Role } from 'appwrite';
 import { TimeCapsule, Comment, Notification, NotificationType } from '@/types';
 
 // Client Config
@@ -17,6 +17,7 @@ export const appwriteConfig = {
     collections: {
         users: process.env.NEXT_PUBLIC_APPWRITE_USERS_COLLECTION_ID!,
         capsules: process.env.NEXT_PUBLIC_APPWRITE_CAPSULES_COLLECTION_ID!,
+        fileMetadata: process.env.NEXT_PUBLIC_APPWRITE_FILE_ATTACHMENTS_COLLECTION_ID!,
         comments: process.env.NEXT_PUBLIC_APPWRITE_COMMENTS_COLLECTION_ID!,
         notifications: process.env.NEXT_PUBLIC_APPWRITE_NOTIFICATIONS_COLLECTION_ID!
     },
@@ -109,9 +110,9 @@ export async function getCurrentUser() {
         return {
             userId: currentAccount.$id,
             email: currentAccount.email,
-            name: currentAccount.name, // This may not be available directly; consider fetching user details if needed
+            name: currentAccount.name,
             is2FAEnabled: false,
-            role: 'user', // Default role; adjust as necessary
+            role: 'user',
             createdAt: new Date(),
             updatedAt: new Date()
         };
@@ -223,8 +224,14 @@ export async function deleteCapsule(capsuleId: string) {
     }
 }
 
+// comment functions
 export async function createComment(comment: Omit<Comment, 'id' | 'createdAt'>) {
     try {
+        // Basic validation
+        if (!comment.capsuleId || !comment.userId || !comment.content) {
+            throw new Error('Missing required fields');
+        }
+
         const documentId = ID.unique();
         const timestamp = new Date().toISOString();
         
@@ -247,6 +254,41 @@ export async function createComment(comment: Omit<Comment, 'id' | 'createdAt'>) 
         return response;
     } catch (error) {
         console.error("Error creating comment:", error);
+        throw error;
+    }
+}
+
+export async function getUserComments(userId: string) {
+    try {
+        return await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.collections.comments,
+            [
+                Query.equal('userId', userId),
+                Query.orderDesc('$createdAt'),
+                Query.limit(100)
+            ]
+        );
+    } catch (error) {
+        console.error("Error fetching user comments:", error);
+        throw error;
+    }
+}
+
+export async function getCapsuleComments(capsuleId: string) {
+    try {
+        return await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.collections.comments,
+            [
+                Query.equal('capsuleId', capsuleId),
+                Query.isNull('parentId'),
+                Query.orderDesc('$createdAt'),
+                Query.limit(100)
+            ]
+        );
+    } catch (error) {
+        console.error("Error fetching comments:", error);
         throw error;
     }
 }
@@ -337,42 +379,120 @@ export async function deleteNotification(notificationId: string) {
 }
 
 // File Upload Function
-export async function uploadFile(file: File) {
+export async function uploadFile(file: File, userId: string, capsuleId: string) {
     try {
+        // Create a user-specific file ID that includes the user and capsule reference
+        const fileId = `${userId}-${capsuleId}-${ID.unique()}`;
+        
+        // Upload file with specific permissions
         const uploadedFile = await storage.createFile(
             appwriteConfig.buckets.capsuleFiles,
-            ID.unique(),
-            file
+            fileId,
+            file,
+            // Set permissions so only the file owner can access it
+            [
+                Permission.read(Role.user(userId)),
+                Permission.update(Role.user(userId)),
+                Permission.delete(Role.user(userId))
+            ]
         );
 
-        // Get file URL as string
+        // Get file URL
         const fileUrl = storage.getFileView(
             appwriteConfig.buckets.capsuleFiles,
             uploadedFile.$id
-        ).toString();
+        );
+
+        // Create a file metadata document in the database
+        const fileMetadata = await databases.createDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.collections.fileMetadata,
+            fileId,
+            {
+                userId: userId,
+                capsuleId: capsuleId,
+                fileId: uploadedFile.$id,
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                url: fileUrl.toString(),
+                createdAt: new Date().toISOString()
+            },
+            // Set permissions for the metadata document
+            [
+                Permission.read(Role.user(userId)),
+                Permission.update(Role.user(userId)),
+                Permission.delete(Role.user(userId))
+            ]
+        );
 
         return {
             id: uploadedFile.$id,
-            name: uploadedFile.name,
-            url: fileUrl,
-            type: uploadedFile.mimeType,
-            size: uploadedFile.sizeOriginal
+            name: file.name,
+            url: fileUrl.toString(),
+            type: file.type,
+            size: file.size,
+            metadataId: fileMetadata.$id
         };
     } catch (error) {
-        console.error(error);
+        console.error('Error uploading file:', error);
         throw error;
     }
 }
 
-export async function deleteFile(fileId: string) {
+export async function deleteFile(fileId: string, userId: string) {
     try {
+        // First check if the user owns this file
+        const fileMetadata = await databases.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.collections.fileMetadata,
+            fileId
+        );
+
+        if (fileMetadata.userId !== userId) {
+            throw new Error('Unauthorized to delete this file');
+        }
+
+        // Delete the file from storage
         await storage.deleteFile(
             appwriteConfig.buckets.capsuleFiles,
             fileId
         );
+
+        // Delete the metadata document
+        await databases.deleteDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.collections.fileMetadata,
+            fileId
+        );
+
         return true;
     } catch (error) {
-        console.error(error);
+        console.error('Error deleting file:', error);
+        throw error;
+    }
+}
+
+export async function getUserFiles(userId: string, capsuleId: string) {
+    try {
+        const files = await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.collections.fileMetadata,
+            [
+                Query.equal('userId', userId),
+                Query.equal('capsuleId', capsuleId)
+            ]
+        );
+        
+        return files.documents.map(doc => ({
+            id: doc.fileId,
+            name: doc.name,
+            url: doc.url,
+            type: doc.type,
+            size: doc.size
+        }));
+    } catch (error) {
+        console.error('Error fetching user files:', error);
         throw error;
     }
 }

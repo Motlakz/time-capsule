@@ -69,7 +69,7 @@ export default function Feed({
         {/* Main Content */}
         <div className="flex-1">
           {/* Search Bar */}
-          <div className="relative mb-6 border border-gray-700 rounded-lg">
+          <div className="relative mb-6 border dark:border-gray-700 rounded-lg">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               placeholder="Search capsules..."
@@ -81,7 +81,7 @@ export default function Feed({
 
           {/* Feed Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-6 border border-gray-700 rounded-lg">
+            <TabsList className="mb-6 border dark:border-gray-700 rounded-lg">
               <TabsTrigger value="latest">Latest</TabsTrigger>
               <TabsTrigger value="popular">Popular</TabsTrigger>
             </TabsList>
@@ -139,7 +139,7 @@ export default function Feed({
         {/* Trending Sidebar */}
         <div className="lg:w-80 space-y-6">
           {/* Trending Tags */}
-          <div className="bg-card rounded-lg p-4 border border-gray-700">
+          <div className="bg-card rounded-lg p-4 border dark:border-gray-700">
             <div className="flex items-center gap-2 mb-4">
               <Hash className="w-5 h-5" />
               <h2 className="font-semibold">Trending Tags</h2>
@@ -169,7 +169,7 @@ export default function Feed({
               {trendingCapsules.map((capsule) => (
                 <div
                   key={capsule.id}
-                  className="p-3 hover:bg-accent rounded-md transition-colors border border-gray-700"
+                  className="p-3 hover:bg-accent rounded-md transition-colors border dark:border-gray-700"
                 >
                   <h3 className="font-medium">{capsule.title}</h3>
                   <p className="text-sm text-muted-foreground line-clamp-2">

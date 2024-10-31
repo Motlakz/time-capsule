@@ -1,23 +1,11 @@
 import { TimeCapsule, User, Notification, Comment } from '@/types';
 
-export const currentUser: User = {
-    id: '0',
-    userId: 'current_user',
-    name: 'Your Name',
-    email: 'your.email@example.com',
-    image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=current_user',
-    is2FAEnabled: false,
-    role: 'user',
-    createdAt: new Date(),
-    updatedAt: new Date()
-};
-
 // Demo user
 export const mockUser: User = {
-    id: '1',
-    userId: '1',
-    name: 'Demo User',
-    email: 'demo@example.com',
+    id: process.env.APPWRITE_USER_ID!,
+    userId: process.env.APPWRITE_USER_ID!,
+    name: process.env.APPWRITE_USERNAME!,
+    email: process.env.APPWRITE_USER_EMAIL!,
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo',
     is2FAEnabled: false,
     role: 'user',

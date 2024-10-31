@@ -177,7 +177,7 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
       variants={formVariants}
       initial="hidden"
       animate="visible"
-      className="w-full max-w-2xl mx-auto"
+      className="w-full max-w-2xl mx-auto border dark:border-gray-700 rounded-lg"
     >
       <Card>
         <CardContent>
@@ -190,7 +190,7 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="My Time Capsule" {...field} />
+                      <Input className="border dark:border-gray-700 rounded-lg" placeholder="My Time Capsule" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -207,6 +207,7 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
                       <Textarea
                         placeholder="What's this time capsule about?"
                         {...field}
+                        className="border dark:border-gray-700 rounded-lg"
                       />
                     </FormControl>
                     <FormMessage />
@@ -226,7 +227,7 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
+                              "w-[240px] pl-3 text-left font-normal border dark:border-gray-700 rounded-lg",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -248,6 +249,7 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
                             date < new Date() || date < new Date("1900-01-01")
                           }
                           initialFocus
+                          className="border dark:border-gray-700 rounded-lg"
                         />
                       </PopoverContent>
                     </Popover>
@@ -268,7 +270,7 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
+                              "w-[240px] pl-3 text-left font-normal border dark:border-gray-700 rounded-lg",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -290,6 +292,7 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
                             date < new Date() || date < new Date("1900-01-01")
                           }
                           initialFocus
+                          className="border dark:border-gray-700 rounded-lg"
                         />
                       </PopoverContent>
                     </Popover>
@@ -313,11 +316,11 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
                       }}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="border dark:border-gray-700 rounded-lg">
                           <SelectValue placeholder="Add tags" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="border dark:border-gray-700 rounded-lg">
                         <SelectItem value="memories">Memories</SelectItem>
                         <SelectItem value="family">Family</SelectItem>
                         <SelectItem value="friends">Friends</SelectItem>
@@ -354,7 +357,7 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
                 control={form.control}
                 name="isPrivate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <FormItem className="flex flex-row items-center justify-between border dark:border-gray-700 rounded-lg p-4">
                     <div className="space-y-0.5">
                       <FormLabel className="text-base">
                         Private Capsule
@@ -377,6 +380,8 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
                 <FormLabel>Attachments</FormLabel>
                 <FileUploader
                   onFilesUploaded={(uploadedFiles) => setFiles(uploadedFiles)}
+                  initialFiles={files}
+                  capsuleId={capsuleId}
                 />
               </div>
 

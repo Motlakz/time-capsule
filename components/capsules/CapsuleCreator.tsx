@@ -78,6 +78,7 @@ const formVariants = {
 
 export function CapsuleCreator() {
     const [files, setFiles] = useState<string>('[]');
+    const [tempCapsuleId] = useState(() => ID.unique());
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { toast } = useToast();
     const router = useRouter();
@@ -158,7 +159,7 @@ export function CapsuleCreator() {
       variants={formVariants}
       initial="hidden"
       animate="visible"
-      className="w-full max-w-2xl mx-auto"
+      className="w-full max-w-2xl mx-auto border dark:border-gray-700 rounded-lg"
     >
       <Card>
         <CardContent>
@@ -171,7 +172,7 @@ export function CapsuleCreator() {
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="My Time Capsule" {...field} />
+                      <Input className="border dark:border-gray-700" placeholder="My Time Capsule" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -188,6 +189,7 @@ export function CapsuleCreator() {
                       <Textarea
                         placeholder="What's this time capsule about?"
                         {...field}
+                        className="border dark:border-gray-700"
                       />
                     </FormControl>
                     <FormMessage />
@@ -207,7 +209,7 @@ export function CapsuleCreator() {
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
+                              "w-[240px] pl-3 text-left font-normal border dark:border-gray-700 rounded-lg",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -229,6 +231,7 @@ export function CapsuleCreator() {
                             date < new Date() || date < new Date("1900-01-01")
                           }
                           initialFocus
+                          className="border dark:border-gray-700 rounded-lg"
                         />
                       </PopoverContent>
                     </Popover>
@@ -249,7 +252,7 @@ export function CapsuleCreator() {
                             <Button
                             variant="outline"
                             className={cn(
-                                "w-[240px] pl-3 text-left font-normal",
+                                "w-[240px] pl-3 text-left font-normal border dark:border-gray-700 rounded-lg",
                                 !field.value && "text-muted-foreground"
                             )}
                             >
@@ -272,6 +275,7 @@ export function CapsuleCreator() {
                             date < new Date()
                             }
                             initialFocus
+                            className="border dark:border-gray-700 rounded-lg"
                         />
                         </PopoverContent>
                     </Popover>
@@ -298,17 +302,17 @@ export function CapsuleCreator() {
                         }}
                     >
                         <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="border dark:border-gray-700">
                             <SelectValue placeholder="Add tags" />
                         </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                        <SelectItem value="memories">Memories</SelectItem>
-                        <SelectItem value="family">Family</SelectItem>
-                        <SelectItem value="friends">Friends</SelectItem>
-                        <SelectItem value="work">Work</SelectItem>
-                        <SelectItem value="travel">Travel</SelectItem>
-                        <SelectItem value="milestone">Milestone</SelectItem>
+                        <SelectContent className="border dark:border-gray-700">
+                          <SelectItem value="memories">Memories</SelectItem>
+                          <SelectItem value="family">Family</SelectItem>
+                          <SelectItem value="friends">Friends</SelectItem>
+                          <SelectItem value="work">Work</SelectItem>
+                          <SelectItem value="travel">Travel</SelectItem>
+                          <SelectItem value="milestone">Milestone</SelectItem>
                         </SelectContent>
                     </Select>
                     <div className="flex flex-wrap gap-2 mt-2">
@@ -320,7 +324,7 @@ export function CapsuleCreator() {
                             onClick={() => {
                             const newTags = field.value.filter((t) => t !== tag);
                             field.onChange(newTags);
-                            }}
+                          }}
                         >
                             {tag}
                             <Icons.x className="w-3 h-3 ml-1" />
@@ -339,7 +343,7 @@ export function CapsuleCreator() {
                 control={form.control}
                 name="isPrivate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <FormItem className="flex flex-row items-center justify-between border dark:border-gray-700 rounded-lg p-4">
                     <div className="space-y-0.5">
                       <FormLabel className="text-base">
                         Private Capsule
@@ -352,6 +356,7 @@ export function CapsuleCreator() {
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        className="dark:data-[state=checked]:bg-white"
                       />
                     </FormControl>
                   </FormItem>
@@ -361,9 +366,10 @@ export function CapsuleCreator() {
               <div className="space-y-4">
                 <FormLabel>Attachments</FormLabel>
                 <FileUploader
-                    onFilesUploaded={(uploadedFiles) => {
-                        setFiles(typeof uploadedFiles === 'string' ? uploadedFiles : '[]');
-                    }}
+                  onFilesUploaded={(uploadedFiles) => {
+                    setFiles(typeof uploadedFiles === 'string' ? uploadedFiles : '[]');
+                  }}
+                  capsuleId={tempCapsuleId}
                 />
               </div>
 

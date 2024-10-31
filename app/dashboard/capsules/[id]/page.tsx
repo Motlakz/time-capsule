@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -5,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Icons } from '@/components/ui/icons';
 import { CapsuleCard } from '@/components/capsules/CapsuleCard';
 import { TimeCapsule } from '@/types';
-import { getCapsule } from '@/lib/appwrite';
+import { deleteCapsule, getCapsule } from '@/lib/appwrite';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
@@ -90,7 +91,7 @@ export default function CapsulePage({ params }: { params: { id: string } }) {
     // Implement delete functionality
     if (window.confirm('Are you sure you want to delete this capsule?')) {
       try {
-        // await deleteCapsule(params.id);
+        await deleteCapsule(params.id);
         toast({
           title: "Success",
           description: "Capsule deleted successfully.",

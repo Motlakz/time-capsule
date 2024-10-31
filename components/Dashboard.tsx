@@ -44,9 +44,7 @@ const containerVariants = {
 
 export default function Dashboard({ 
   user, 
-  capsules, 
-  onCreateCapsule, 
-  onEditCapsule, 
+  capsules,  
   onDeleteCapsule 
 }: DashboardProps) {
   const [activeMainTab, setActiveMainTab] = useState('private');
@@ -115,7 +113,7 @@ export default function Dashboard({
           <h1 className="text-3xl font-bold">Welcome, {user.name || 'Time Traveler'}</h1>
           <p className="text-muted-foreground mt-1">Manage your time capsules</p>
         </div>
-        <Button onClick={() => setIsCreatorOpen(true)} className="flex border border-gray-700 rounded-lg items-center gap-2 mt-4 sm:mt-0">
+        <Button onClick={() => setIsCreatorOpen(true)} className="flex border dark:border-gray-700 rounded-lg items-center gap-2 mt-4 sm:mt-0">
           <Plus className="w-4 h-4" />
           Create Capsule
         </Button>
@@ -124,7 +122,7 @@ export default function Dashboard({
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
         {Object.entries(capsuleStats).map(([key, value]) => (
-          <div key={key} className="bg-card p-4 rounded-lg shadow-sm border border-gray-700">
+          <div key={key} className="bg-card p-4 rounded-lg shadow-sm border dark:border-gray-700">
             <div className="text-2xl font-bold">{value}</div>
             <div className="text-sm text-muted-foreground capitalize">{key}</div>
           </div>
@@ -133,7 +131,7 @@ export default function Dashboard({
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <div className="flex-1 border border-gray-700 rounded-lg">
+        <div className="flex-1 border dark:border-gray-700 rounded-lg">
           <Input
             placeholder="Search capsules..."
             value={searchTerm}
@@ -142,10 +140,10 @@ export default function Dashboard({
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px] border border-gray-700 rounded-lg">
+          <SelectTrigger className="w-[180px] border dark:border-gray-700 rounded-lg">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
-          <SelectContent className="border border-gray-700 rounded-lg">
+          <SelectContent className="border dark:border-gray-700 rounded-lg">
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="draft">Draft</SelectItem>
             <SelectItem value="scheduled">Scheduled</SelectItem>
@@ -154,10 +152,10 @@ export default function Dashboard({
           </SelectContent>
         </Select>
         <Select value={sortBy} onValueChange={setSortBy}>
-          <SelectTrigger className="w-[180px] border border-gray-700 rounded-lg">
+          <SelectTrigger className="w-[180px] border dark:border-gray-700 rounded-lg">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent className="border border-gray-700 rounded-lg">
+          <SelectContent className="border dark:border-gray-700 rounded-lg">
             <SelectItem value="date">Date Created</SelectItem>
             <SelectItem value="title">Title</SelectItem>
             <SelectItem value="reveal">Reveal Date</SelectItem>
@@ -167,7 +165,7 @@ export default function Dashboard({
 
       {/* Main Tabs for Private and Public */}
         <Tabs value={activeMainTab} onValueChange={setActiveMainTab}>
-        <TabsList className="flex border border-gray-700 rounded-lg">
+        <TabsList className="flex border dark:border-gray-700 rounded-lg">
             <TabsTrigger value="private" className="flex-1 flex items-center justify-center gap-2">
                 Private
             </TabsTrigger>
@@ -179,7 +177,7 @@ export default function Dashboard({
         {/* Sub-Tabs for Grid and List Views */}
         <TabsContent value="private" className="mt-6">
             <Tabs value={activeSubTab} onValueChange={setActiveSubTab}>
-            <TabsList className="border border-gray-700 rounded-lg">
+            <TabsList className="border dark:border-gray-700 rounded-lg">
                 <TabsTrigger value="grid" className="flex items-center gap-2">
                   <Grid className="w-4 h-4" />
                   Grid
@@ -285,7 +283,7 @@ export default function Dashboard({
 
       {/* Edit Dialog */}
       <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
-        <DialogContent className="max-w-2xl max-h-[600px] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[600px] overflow-y-auto border dark:border-gray-700 rounded-lg">
           <DialogHeader>
             <DialogTitle>Edit Time Capsule</DialogTitle>
             <DialogDescription>

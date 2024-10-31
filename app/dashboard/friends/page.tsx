@@ -203,10 +203,10 @@ const FriendsPage = ({
       <div className="container mx-auto p-4 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="max-w-lg w-full">
-            <Card className="border border-gray-700">
+            <Card className="border dark:border-gray-700">
               <CardContent className="p-4">
                 <Tabs defaultValue="friends" value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid w-full grid-cols-2 border border-gray-700">
+                  <TabsList className="grid w-full grid-cols-2 border dark:border-gray-700">
                     <TabsTrigger value="friends">
                       <Users className="w-4 h-4 mr-2" />
                       Friends
@@ -217,7 +217,7 @@ const FriendsPage = ({
                     </TabsTrigger>
                   </TabsList>
   
-                  <div className="relative my-4 border border-gray-700 rounded-lg">
+                  <div className="relative my-4 border dark:border-gray-700 rounded-lg">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <Input
                       placeholder="Search..."
@@ -234,7 +234,7 @@ const FriendsPage = ({
                         <Button
                           key={friend.userId}
                           variant={selectedFriend?.userId === friend.userId ? "secondary" : "ghost"}
-                          className="w-full justify-start p-2 h-auto border border-gray-700 rounded-lg"
+                          className="w-full justify-start p-2 h-auto border dark:border-gray-700 rounded-lg"
                           onClick={() => setSelectedFriend(friend)}
                         >
                           <div className="flex items-center gap-3 w-full">
@@ -254,11 +254,11 @@ const FriendsPage = ({
                     })}
                   </TabsContent>
   
-                  <TabsContent value="discover" className="space-y-2 border border-gray-700 rounded-lg p-4">
+                  <TabsContent value="discover" className="space-y-2 border dark:border-gray-700 rounded-lg p-4">
                     {filteredPotentialFriends.map((user) => (
                       <div
                         key={user.userId}
-                        className="flex items-center justify-between p-2 hover:bg-secondary border border-gray-700 rounded-lg"
+                        className="flex items-center justify-between p-2 hover:bg-secondary border dark:border-gray-700 rounded-lg"
                       >
                         <div className="flex items-center gap-3">
                           <Avatar className="h-10 w-10">
@@ -290,7 +290,7 @@ const FriendsPage = ({
                               )}
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="border border-gray-700 rounded-lg">
+                          <DialogContent className="border dark:border-gray-700 rounded-lg">
                             <DialogHeader>
                               <DialogTitle>Send Friend Request</DialogTitle>
                               <DialogDescription>
@@ -326,7 +326,7 @@ const FriendsPage = ({
             </Card>
           </div>
   
-          <div className="max-w-lg w-full border border-gray-700 rounded-lg">
+          <div className="max-w-lg w-full border dark:border-gray-700 rounded-lg">
             {selectedFriend ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -335,7 +335,7 @@ const FriendsPage = ({
               >
                 <Card className="mb-6">
                   <CardContent className="p-6 ">
-                    <div className="flex items-center gap-4 mb-4 border border-gray-700 rounded-lg p-4">
+                    <div className="flex items-center gap-4 mb-4 border dark:border-gray-700 rounded-lg p-4">
                       <Avatar className="h-20 w-20">
                         <AvatarImage src={selectedFriend.image} alt={selectedFriend.name} />
                         <AvatarFallback>{selectedFriend.name.charAt(0)}</AvatarFallback>
@@ -347,21 +347,21 @@ const FriendsPage = ({
                     </div>
                     
                     <div className="grid grid-cols-3 gap-4 mt-4">
-                      <div className="flex items-center flex-col text-center gap-2 p-2 border border-gray-700 rounded-lg">
+                      <div className="flex items-center flex-col text-center gap-2 p-2 border dark:border-gray-700 rounded-lg">
                         <Lock className="w-4 h-4 text-primary" />
                         <div>
                           <div className="font-medium">{getFriendStats(selectedFriend.userId).totalCapsules}</div>
                           <div className="text-sm text-muted-foreground">Capsules</div>
                         </div>
                       </div>
-                      <div className="flex items-center flex-col text-center gap-2 p-2 border border-gray-700 rounded-lg">
+                      <div className="flex items-center flex-col text-center gap-2 p-2 border dark:border-gray-700 rounded-lg">
                         <Heart className="w-4 h-4 text-primary" />
                         <div>
                           <div className="font-medium">{getFriendStats(selectedFriend.userId).collaborations}</div>
                           <div className="text-sm text-muted-foreground">Collaborations</div>
                         </div>
                       </div>
-                      <div className="flex items-center flex-col text-center gap-2 p-2 border border-gray-700 rounded-lg">
+                      <div className="flex items-center flex-col text-center gap-2 p-2 border dark:border-gray-700 rounded-lg">
                         <Clock className="w-4 h-4 text-primary" />
                         <div>
                           <div className="font-medium">{getFriendStats(selectedFriend.userId).scheduledCapsules}</div>

@@ -55,7 +55,7 @@ export function RegisterForm() {
   };
 
   return (
-    <motion.div className="w-full max-w-md mx-auto my-24">
+    <motion.div className="w-full max-w-md mx-auto my-24 border dark:border-gray-700 rounded-lg">
       <Card>
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Create an account</CardTitle>
@@ -71,7 +71,7 @@ export function RegisterForm() {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input type="text" placeholder="John Doe" {...field} />
+                      <Input type="text" className="border dark:border-gray-700" placeholder="John Doe" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -84,7 +84,7 @@ export function RegisterForm() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="name@example.com" {...field} />
+                      <Input type="email" className="border dark:border-gray-700" placeholder="name@example.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -97,7 +97,7 @@ export function RegisterForm() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="Create Password" {...field} />
+                      <Input type="password" className="border dark:border-gray-700" placeholder="Create Password" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -110,7 +110,7 @@ export function RegisterForm() {
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="Confirm Password"  {...field} />
+                      <Input type="password" className="border dark:border-gray-700" placeholder="Confirm Password"  {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -123,7 +123,7 @@ export function RegisterForm() {
                   <FormItem>
                     <FormLabel>Role</FormLabel>
                     <FormControl>
-                      <select {...field} className="border bg-white text-gray-600 rounded p-2 w-full">
+                      <select {...field} className="border bg-white dark:bg-slate-950 dark:text-white text-gray-600 rounded p-2 w-full">
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                       </select>

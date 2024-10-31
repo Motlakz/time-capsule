@@ -92,7 +92,7 @@ export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'gri
       whileHover="hover"
       className={`relative flex flex-col ${layoutType === 'list' ? 'border-b' : ''}`} 
     >
-      <Card className={`flex flex-col border border-gray-700 rounded-lg ${isDestroyed ? 'opacity-50' : ''}`}>
+      <Card className={`flex flex-col border dark:border-gray-700 rounded-lg ${isDestroyed ? 'opacity-50' : ''}`}>
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
@@ -133,7 +133,7 @@ export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'gri
                     <button
                       key={file.id}
                       onClick={() => handleFileClick(file)}
-                      className="relative border border-gray-700 aspect-square rounded-md overflow-hidden group hover:ring-2 hover:ring-primary transition-all"
+                      className="relative border dark:border-gray-700 aspect-square rounded-md overflow-hidden group hover:ring-2 hover:ring-primary transition-all"
                     >
                       {file.type.startsWith('image/') ? (
                         <>
@@ -173,7 +173,7 @@ export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'gri
 
             <div className="flex flex-wrap gap-2">
               {capsule.tags.map((tag, index) => (
-                <Badge key={index} className="border border-gray-700 rounded-lg" variant="outline">
+                <Badge key={index} className="border dark:border-gray-700 rounded-lg" variant="outline">
                   {tag}
                 </Badge>
               ))}
@@ -188,7 +188,7 @@ export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'gri
                 size="sm" 
                 onClick={() => setShowComments(!showComments)}
                 className={cn(
-                  "gap-2 mr-2 w-full border border-gray-700 rounded-lg",
+                  "gap-2 mr-2 w-full border dark:border-gray-700 rounded-lg",
                   showComments && "bg-muted"
                 )}
               >
@@ -218,7 +218,7 @@ export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'gri
             <Button 
               variant="outline" 
               size="sm" 
-              className="border border-gray-700 rounded-lg"
+              className="border dark:border-gray-700 rounded-lg"
               onClick={() => setShowShareDialog(true)}
               disabled={isDestroyed}
             >
@@ -230,7 +230,7 @@ export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'gri
               variant="outline" 
               size="sm" 
               onClick={onEdit} 
-              className="border border-gray-700 rounded-lg"
+              className="border dark:border-gray-700 rounded-lg"
               disabled={isDestroyed || isLocked(capsule) || isRevealed}
             >
               <Icons.edit className="h-4 w-4 mr-2" />
@@ -239,7 +239,7 @@ export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'gri
             <Button 
               variant="destructive" 
               size="sm" 
-              className="border border-gray-700 rounded-lg"
+              className="border dark:border-gray-700 rounded-lg"
               onClick={() => setShowDeleteDialog(true)} 
               disabled={isDestroyed || isLocked(capsule)}
             >
@@ -264,7 +264,7 @@ export function CapsuleCard({ capsule, onEdit, onDelete, user, layoutType = 'gri
       {/* Lock overlay */}
       {isLocked(capsule) && (
         <div 
-          className="absolute inset-0 bg-background/80 backdrop-blur-sm border border-gray-700 rounded-lg
+          className="absolute inset-0 bg-background/80 backdrop-blur-sm border dark:border-gray-700 rounded-lg
             flex flex-col items-center justify-center gap-4 cursor-not-allowed"
           onClick={handleLockedClick}
         >

@@ -18,7 +18,7 @@ const sidebarLinks = [
 ];
 
 interface SidebarProps {
-  isOpen: boolean; // Ensure this is a boolean
+  isOpen: boolean;
 }
 
 export function Sidebar({ isOpen }: SidebarProps) {

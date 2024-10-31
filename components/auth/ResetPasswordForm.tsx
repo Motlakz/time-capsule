@@ -60,7 +60,7 @@ export function ResetPasswordForm() {
       variants={formVariants}
       initial="hidden"
       animate="visible"
-      className="w-full max-w-md mx-auto my-24"
+      className="w-full max-w-md mx-auto my-24 border dark:border-gray-700 rounded-lg"
     >
       <Card>
         <CardHeader className="space-y-1">
@@ -79,7 +79,7 @@ export function ResetPasswordForm() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="name@example.com" {...field} />
+                      <Input className="border dark:border-gray-700" placeholder="name@example.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

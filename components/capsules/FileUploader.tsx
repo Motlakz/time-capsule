@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { uploadFile } from '@/lib/appwrite';
+import { uploadFile, deleteFile } from '@/lib/appwrite';
 import type { FileAttachment } from '@/types';
 import { Icons } from '../ui/icons';
 import { useAuth } from '@/hooks/useAuth';
@@ -9,13 +9,13 @@ import { useAuth } from '@/hooks/useAuth';
 interface FileUploaderProps {
   onFilesUploaded: (files: string) => void;
   initialFiles?: string;
+  capsuleId: string;
 }
 
-export function FileUploader({ onFilesUploaded, initialFiles }: FileUploaderProps) {
+export function FileUploader({ onFilesUploaded, initialFiles, capsuleId }: FileUploaderProps) {
   const { user } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<FileAttachment[]>(() => {
-    // Parse initial files if provided
     if (initialFiles) {
       try {
         return JSON.parse(initialFiles);
@@ -27,11 +27,10 @@ export function FileUploader({ onFilesUploaded, initialFiles }: FileUploaderProp
   });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.length) return;
-
-    if (!user) {
-      console.error("User is not authenticated.");
-      alert("You must be logged in to upload files.");
+    if (!e.target.files?.length || !user) {
+      if (!user) {
+        alert("You must be logged in to upload files.");
+      }
       return;
     }
 
@@ -40,25 +39,34 @@ export function FileUploader({ onFilesUploaded, initialFiles }: FileUploaderProp
       const newFiles: FileAttachment[] = [];
 
       for (const file of Array.from(e.target.files)) {
-        const uploadedFile = await uploadFile(file);
+        // Pass both userId and capsuleId to uploadFile
+        const uploadedFile = await uploadFile(file, user.userId, capsuleId);
         newFiles.push(uploadedFile);
       }
 
       const updatedFiles = [...uploadedFiles, ...newFiles];
       setUploadedFiles(updatedFiles);
-      onFilesUploaded(JSON.stringify(updatedFiles)); // Convert to JSON string
+      onFilesUploaded(JSON.stringify(updatedFiles));
     } catch (error) {
       console.error(error);
-      alert("Failed to upload files. Please check your permissions and try again.");
+      alert("Failed to upload files. Please try again.");
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleRemoveFile = (fileId: string) => {
-    const updatedFiles = uploadedFiles.filter(file => file.id !== fileId);
-    setUploadedFiles(updatedFiles);
-    onFilesUploaded(JSON.stringify(updatedFiles)); // Convert to JSON string
+  const handleRemoveFile = async (fileId: string) => {
+    if (!user) return;
+
+    try {
+      await deleteFile(fileId, user.userId);
+      const updatedFiles = uploadedFiles.filter(file => file.id !== fileId);
+      setUploadedFiles(updatedFiles);
+      onFilesUploaded(JSON.stringify(updatedFiles));
+    } catch (error) {
+      console.error('Error removing file:', error);
+      alert('Failed to remove file. Please try again.');
+    }
   };
 
   return (
