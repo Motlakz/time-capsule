@@ -1,4 +1,4 @@
-import { Account, Client, Databases, Storage, ID, Query, Permission, Role } from 'appwrite';
+import { Account, Client, Databases, Storage, ID, Query } from 'appwrite';
 import { TimeCapsule, Comment, Notification, NotificationType } from '@/types';
 
 // Client Config
@@ -244,6 +244,7 @@ export async function createComment(comment: Omit<Comment, 'id' | 'createdAt'>) 
             createdAt: timestamp
         };
 
+        // No need to check for existing comments - users can comment multiple times
         const response = await databases.createDocument(
             appwriteConfig.databaseId,
             appwriteConfig.collections.comments,
@@ -379,63 +380,29 @@ export async function deleteNotification(notificationId: string) {
 }
 
 // File Upload Function
-export async function uploadFile(file: File, userId: string, capsuleId: string) {
+export async function uploadFile(file: File) {
     try {
-        // Create a user-specific file ID that includes the user and capsule reference
-        const fileId = `${userId}-${capsuleId}-${ID.unique()}`;
-        
-        // Upload file with specific permissions
         const uploadedFile = await storage.createFile(
             appwriteConfig.buckets.capsuleFiles,
-            fileId,
-            file,
-            // Set permissions so only the file owner can access it
-            [
-                Permission.read(Role.user(userId)),
-                Permission.update(Role.user(userId)),
-                Permission.delete(Role.user(userId))
-            ]
+            ID.unique(),
+            file
         );
 
-        // Get file URL
+        // Get file URL as string
         const fileUrl = storage.getFileView(
             appwriteConfig.buckets.capsuleFiles,
             uploadedFile.$id
-        );
-
-        // Create a file metadata document in the database
-        const fileMetadata = await databases.createDocument(
-            appwriteConfig.databaseId,
-            appwriteConfig.collections.fileMetadata,
-            fileId,
-            {
-                userId: userId,
-                capsuleId: capsuleId,
-                fileId: uploadedFile.$id,
-                name: file.name,
-                type: file.type,
-                size: file.size,
-                url: fileUrl.toString(),
-                createdAt: new Date().toISOString()
-            },
-            // Set permissions for the metadata document
-            [
-                Permission.read(Role.user(userId)),
-                Permission.update(Role.user(userId)),
-                Permission.delete(Role.user(userId))
-            ]
-        );
+        ).toString();
 
         return {
             id: uploadedFile.$id,
-            name: file.name,
-            url: fileUrl.toString(),
-            type: file.type,
-            size: file.size,
-            metadataId: fileMetadata.$id
+            name: uploadedFile.name,
+            url: fileUrl,
+            type: uploadedFile.mimeType,
+            size: uploadedFile.sizeOriginal
         };
     } catch (error) {
-        console.error('Error uploading file:', error);
+        console.error(error);
         throw error;
     }
 }

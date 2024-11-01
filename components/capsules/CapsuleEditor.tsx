@@ -380,8 +380,6 @@ export function CapsuleEditor({ capsuleId }: CapsuleEditorProps) {
                 <FormLabel>Attachments</FormLabel>
                 <FileUploader
                   onFilesUploaded={(uploadedFiles) => setFiles(uploadedFiles)}
-                  initialFiles={files}
-                  capsuleId={capsuleId}
                 />
               </div>
 

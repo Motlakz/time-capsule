@@ -78,7 +78,6 @@ const formVariants = {
 
 export function CapsuleCreator() {
     const [files, setFiles] = useState<string>('[]');
-    const [tempCapsuleId] = useState(() => ID.unique());
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { toast } = useToast();
     const router = useRouter();
@@ -366,10 +365,9 @@ export function CapsuleCreator() {
               <div className="space-y-4">
                 <FormLabel>Attachments</FormLabel>
                 <FileUploader
-                  onFilesUploaded={(uploadedFiles) => {
-                    setFiles(typeof uploadedFiles === 'string' ? uploadedFiles : '[]');
-                  }}
-                  capsuleId={tempCapsuleId}
+                    onFilesUploaded={(uploadedFiles) => {
+                        setFiles(typeof uploadedFiles === 'string' ? uploadedFiles : '[]');
+                    }}
                 />
               </div>
 

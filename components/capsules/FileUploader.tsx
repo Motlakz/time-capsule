@@ -9,10 +9,9 @@ import { useAuth } from '@/hooks/useAuth';
 interface FileUploaderProps {
   onFilesUploaded: (files: string) => void;
   initialFiles?: string;
-  capsuleId: string;
 }
 
-export function FileUploader({ onFilesUploaded, initialFiles, capsuleId }: FileUploaderProps) {
+export function FileUploader({ onFilesUploaded, initialFiles }: FileUploaderProps) {
   const { user } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<FileAttachment[]>(() => {
@@ -40,7 +39,7 @@ export function FileUploader({ onFilesUploaded, initialFiles, capsuleId }: FileU
 
       for (const file of Array.from(e.target.files)) {
         // Pass both userId and capsuleId to uploadFile
-        const uploadedFile = await uploadFile(file, user.userId, capsuleId);
+        const uploadedFile = await uploadFile(file);
         newFiles.push(uploadedFile);
       }
 
@@ -49,7 +48,7 @@ export function FileUploader({ onFilesUploaded, initialFiles, capsuleId }: FileU
       onFilesUploaded(JSON.stringify(updatedFiles));
     } catch (error) {
       console.error(error);
-      alert("Failed to upload files. Please try again.");
+      alert(`Failed to upload files: ${error}`);
     } finally {
       setIsUploading(false);
     }
