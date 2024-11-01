@@ -29,8 +29,6 @@ import { Plus, Clock, Grid, List } from 'lucide-react';
 interface DashboardProps {
   user: User;
   capsules: TimeCapsule[];
-  onCreateCapsule: (capsule: Omit<TimeCapsule, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
-  onEditCapsule: (capsule: TimeCapsule) => Promise<void>;
   onDeleteCapsule: (capsuleId: string) => void;
 }
 

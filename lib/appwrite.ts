@@ -143,19 +143,18 @@ export async function deleteAccount(userId: string): Promise<void> {
 // Capsule Functions
 export async function createCapsule(capsule: Omit<TimeCapsule, 'id' | 'createdAt' | 'updatedAt'>) {
     try {
+        const documentId = ID.unique(); // Generate ID here only
         const newCapsule = {
             ...capsule,
-            id: ID.unique(),
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            // Don't modify the files field, pass it as is
             files: capsule.files
         };
 
         return await databases.createDocument(
             appwriteConfig.databaseId,
             appwriteConfig.collections.capsules,
-            newCapsule.id,
+            documentId, // Use the generated ID here
             newCapsule
         );
     } catch (error) {

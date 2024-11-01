@@ -45,7 +45,6 @@ import { Badge } from '../ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { ID } from 'appwrite';
 
 const capsuleSchema = z.object({
     title: z.string().min(3, 'Title must be at least 3 characters'),
@@ -114,9 +113,9 @@ export function CapsuleCreator() {
               files,
               collaborators: [],
               status: 'scheduled' as const,
-              referenceId: ID.unique(),
-              originalMockId: ID.unique(),
               description: data.description || '',
+              originalMockId: '',
+              referenceId: '',
           };
   
           const newCapsule = await createCapsule(capsuleData);

@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import Dashboard from '@/components/Dashboard';
 import { User, TimeCapsule } from '@/types';
 import { useToast } from '@/hooks/use-toast';
-import { getCurrentUser, getUserCapsules, createCapsule, updateCapsule, deleteCapsule } from '@/lib/appwrite';
-import { ID } from 'appwrite';
+import { getCurrentUser, getUserCapsules, deleteCapsule } from '@/lib/appwrite';
 import MainLoader from '@/components/MainLoader';
 import { seedDatabase } from '@/utils/seedDatabase';
 
@@ -78,50 +77,6 @@ export default function DashboardPage() {
         initializeDatabase().then(loadData);
     }, [toast]);
 
-    const handleCreateCapsule = async (capsule: Omit<TimeCapsule, 'id' | 'createdAt' | 'updatedAt'>) => {
-        try {
-            const newCapsule: TimeCapsule = {
-                ...capsule,
-                userId: user?.userId || '',
-                id: ID.unique(),
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            };
-            await createCapsule(newCapsule);
-            setCapsules(prev => [...prev, newCapsule]);
-            toast({
-                title: "Success!",
-                description: "Capsule created successfully.",
-            });
-        } catch (error) {
-            console.error('Failed to create capsule:', error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to create capsule.",
-            });
-        }
-    };
-
-    const handleEditCapsule = async (capsule: TimeCapsule) => {
-        try {
-            await updateCapsule(capsule);
-            setCapsules(prev => prev.map(c => (c.id === capsule.id ? capsule : c)));
-            toast({
-                title: "Success!",
-                description: "Capsule updated successfully.",
-            });
-
-        } catch (error) {
-            console.error('Failed to edit capsule:', error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to update capsule.",
-            });
-        }
-    };
-
     const handleDeleteCapsule = async (id: string) => {
         try {
             await deleteCapsule(id); // Use the deleteCapsule function from Appwrite
@@ -152,8 +107,6 @@ export default function DashboardPage() {
         <Dashboard
             user={user}
             capsules={capsules}
-            onCreateCapsule={handleCreateCapsule}
-            onEditCapsule={handleEditCapsule}
             onDeleteCapsule={handleDeleteCapsule}
         />
     );
