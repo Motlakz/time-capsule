@@ -32,7 +32,7 @@ The technologies I used to build this project include:
 ## Project Repo  
 
 Share a public repo link of your project:  
-[Time Capsule GitHub Repository](https://github.com/time-capsule)
+[Time Capsule GitHub Repository](https://github.com/Motlakz/time-capsule)
 
 ## Demo Video/Photos  
 Share a 2-3 minute demo video of your project:  
