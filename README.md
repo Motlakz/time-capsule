@@ -34,6 +34,7 @@ The technologies I used to build this project include:
 Share a public repo link of your project:  
 [Time Capsule GitHub Repository](https://github.com/Motlakz/time-capsule)
 
-## Demo Video/Photos  
+## Demo Video/Photos
+
 Share a 2-3 minute demo video of your project:  
 [Memory Fort Demo Video](https://youtu.be/W-bjdtY_HiI?si=ivySJxRig9hVNUC9)
