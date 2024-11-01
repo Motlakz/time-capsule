@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CapsuleCard } from '@/components/capsules/CapsuleCard';
 import { Card, CardContent } from '@/components/ui/card';
-import { Search, Users, Heart, Clock, Lock, UserPlus, X } from 'lucide-react';
+import { Search, Users, Heart, Clock, Lock, UserPlus } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Dialog,
